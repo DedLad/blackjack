@@ -7,11 +7,9 @@ const MONGO_URL = 'mongodb://localhost:27017';
 const DB_NAME = 'blackjack';
 const COLLECTION_NAME = 'players';
 
-// Middleware
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000' })); // Allow frontend (React) on port 3000
+app.use(cors({ origin: 'http://localhost:3000' }));
 
-// Helper functions
 const createDeck = () => {
     const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
     const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
@@ -43,7 +41,6 @@ const calculateScore = (hand) => {
     return score;
 };
 
-// Connect to MongoDB
 const client = new MongoClient(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
 client.connect(async (err) => {
@@ -55,7 +52,6 @@ client.connect(async (err) => {
     const db = client.db(DB_NAME);
     const playersCollection = db.collection(COLLECTION_NAME);
 
-    // Endpoint to get or create player
     app.get('/api/start', async (req, res) => {
         try {
             let player = await playersCollection.findOne({});
@@ -71,7 +67,6 @@ client.connect(async (err) => {
         }
     });
 
-    // Endpoint to start the game
     app.post('/api/start-game', async (req, res) => {
         try {
             const { bet } = req.body;
@@ -139,7 +134,6 @@ client.connect(async (err) => {
         }
     });
 
-    // Start the server
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
     });
