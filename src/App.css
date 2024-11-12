@@ -8,6 +8,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 button {
@@ -19,6 +20,7 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 button:hover {
@@ -32,23 +34,77 @@ h1, h2, h3 {
 .money {
   position: absolute;
   top: 10px;
-  right: 10px;
-  font-size: 20px;
+  right: 20px;
 }
 
-.hand {
+.hand-container {
   display: flex;
   justify-content: center;
-  margin: 10px 0;
+  margin: 20px 0;
 }
 
 .card {
-  background-color: #34495e;
-  padding: 10px;
+  width: 226px;  /* Smaller card size */
+  height: 314px; /* Smaller card size */
   margin: 5px;
+  border: 1px solid #fff;
   border-radius: 5px;
+  display: inline-block;
 }
 
-.error {
-  color: #e74c3c;
+.animated-card {
+  animation: cardAnimation 0.5s ease-out;
+}
+
+@keyframes cardAnimation {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.game-result {
+  margin-top: 20px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.action-buttons {
+  margin: 20px 0;
+}
+
+input {
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.start-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.GameOver{
+  color: #c0392b;
 }

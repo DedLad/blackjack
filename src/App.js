@@ -1,181 +1,215 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
-const App = () => {
-    const [deck, setDeck] = useState([]);
-    const [playerHand, setPlayerHand] = useState([]);
-    const [dealerHand, setDealerHand] = useState([]);
-    const [playerScore, setPlayerScore] = useState(0);
-    const [dealerScore, setDealerScore] = useState(0);
-    const [gameOver, setGameOver] = useState(false);
-    const [message, setMessage] = useState('');
-    const [money, setMoney] = useState(0);
-    const [bet, setBet] = useState(0);
-    const [betPlaced, setBetPlaced] = useState(false);
-    const [showHome, setShowHome] = useState(true);
-
-    useEffect(() => {
-        const fetchMoney = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/api/start');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                console.log('Fetched money:', data.money);
-                setMoney(data.money);
-            } catch (error) {
-                console.error("Error fetching money:", error);
-            }
-        };
-        fetchMoney();
-    }, []);
-
-    const startGame = useCallback(async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/start-game', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ bet }),
-            });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            setDeck(data.deck);
-            setPlayerHand(data.playerHand);
-            setDealerHand(data.dealerHand);
-            setPlayerScore(data.playerScore);
-            setDealerScore(data.dealerScore);
-            setGameOver(false);
-            setMessage('');
-            setBetPlaced(true);
-            setMoney(data.money);
-        } catch (error) {
-            console.error("Error starting game:", error);
-        }
-    }, [bet]);
-
-    const hit = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/hit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ deck, playerHand }),
-            });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            setDeck(data.deck);
-            setPlayerHand(data.playerHand);
-            setPlayerScore(data.playerScore);
-
-            if (data.playerScore > 21) {
-                setGameOver(true);
-                setMessage('You bust! Dealer wins.');
-            }
-        } catch (error) {
-            console.error("Error hitting:", error);
-        }
-    };
-
-    const stand = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/dealer-turn', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ deck, dealerHand, playerScore, bet }),
-            });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            setDeck(data.deck);
-            setDealerHand(data.dealerHand);
-            setDealerScore(data.dealerScore);
-
-            const playerWins = playerScore > dealerScore || dealerScore > 21;
-            const dealerWins = dealerScore > playerScore && dealerScore <= 21;
-
-            if (playerWins) {
-                setMessage('You win!');
-                setMoney(data.money);
-            } else if (dealerWins) {
-                setMessage('Dealer wins!');
-                setMoney(data.money);
-            } else {
-                setMessage('It\'s a tie!');
-            }
-            setGameOver(true);
-        } catch (error) {
-            console.error("Error standing:", error);
-        }
-    };
-
-    const placeBet = (amount) => {
-        if (amount > money) {
-            setMessage('Bet amount exceeds available money');
-            return;
-        }
-        setBet(amount);
-        startGame();
-    };
-
-    return (
-        <div className="App">
-            {showHome ? (
-                <div>
-                    <h1>Welcome to Blackjack</h1>
-                    <button onClick={() => setShowHome(false)}>Start</button>
-                </div>
-            ) : (
-                <div>
-                    <h1>Blackjack Game</h1>
-                    <div className="money">Money: ${money}</div>
-                    {!betPlaced ? (
-                        <div>
-                            <h2>Place your bet</h2>
-                            <input type="number" value={bet} onChange={(e) => setBet(Number(e.target.value))} />
-                            <button onClick={() => placeBet(bet)}>Place Bet</button>
-                            {message && <p className="error">{message}</p>}
-                        </div>
-                    ) : (
-                        <div>
-                            <div>
-                                <h2>Player's Hand</h2>
-                                <div className="hand">{playerHand.map((card, index) => <span key={index} className="card">{card.value} of {card.suit}</span>)}</div>
-                                <h3>Score: {playerScore}</h3>
-                            </div>
-                            <div>
-                                <h2>Dealer's Hand</h2>
-                                <div className="hand">{dealerHand.map((card, index) => <span key={index} className="card">{card.value} of {card.suit}</span>)}</div>
-                                {gameOver && <h3>Score: {dealerScore}</h3>}
-                            </div>
-                            {!gameOver ? (
-                                <>
-                                    <button onClick={hit}>Hit</button>
-                                    <button onClick={stand}>Stand</button>
-                                </>
-                            ) : (
-                                <div>
-                                    <h2>{message}</h2>
-                                    <button onClick={() => setBetPlaced(false)}>Play Again</button>
-                                    <button onClick={() => setShowHome(true)}>Return to Home</button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
+// Utility function to draw a random card from the deck
+const drawCard = () => {
+  const cardSuits = ['H', 'D', 'C', 'S']; // Hearts, Diamonds, Clubs, Spades
+  const cardValues = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+  const suit = cardSuits[Math.floor(Math.random() * cardSuits.length)];
+  const value = cardValues[Math.floor(Math.random() * cardValues.length)];
+  return value + suit;
 };
+
+function App() {
+  const [username, setUsername] = useState('');
+  const [money, setMoney] = useState(0);
+  const [playerHand, setPlayerHand] = useState([]);
+  const [playerTotal, setPlayerTotal] = useState(0);
+  const [dealerHand, setDealerHand] = useState([]);
+  const [dealerTotal, setDealerTotal] = useState(0);
+  const [gameResult, setGameResult] = useState(null);
+  const [isGameStarted, setIsGameStarted] = useState(false);
+  const [showModal, setShowModal] = useState(false); // For modal control
+
+  // Start the game and fetch user's money
+  const handleStart = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+      });
+      const data = await response.json();
+      setMoney(data.money);
+
+      const initialPlayerHand = [drawCard(), drawCard()];
+      const initialDealerHand = [drawCard()];
+      setPlayerHand(initialPlayerHand);
+      setPlayerTotal(calculateTotal(initialPlayerHand));
+      setDealerHand(initialDealerHand);
+      setDealerTotal(calculateTotal(initialDealerHand));
+
+      setIsGameStarted(true);
+      setGameResult(null); // Reset game result
+    } catch (error) {
+      console.error('Error starting game:', error);
+      alert('Error starting game');
+    }
+  };
+
+  // Calculate total score for the hand
+  const calculateTotal = (hand) => {
+    let total = 0;
+    let aces = 0;
+    hand.forEach(card => {
+      const value = card.slice(0, -1); // Get value part (e.g., '10', 'J', 'A')
+      if (value === 'A') {
+        total += 11;
+        aces++;
+      } else if (['J', 'Q', 'K'].includes(value)) {
+        total += 10;
+      } else {
+        total += parseInt(value);
+      }
+    });
+
+    // Adjust for aces (if total > 21, subtract 10 for each ace)
+    while (total > 21 && aces > 0) {
+      total -= 10;
+      aces--;
+    }
+    return total;
+  };
+
+  // Handle player hitting for a new card
+  const handleHit = async () => {
+    try {
+      const newCard = drawCard();
+      const newPlayerHand = [...playerHand, newCard];
+      const newPlayerTotal = calculateTotal(newPlayerHand);
+      setPlayerHand(newPlayerHand);
+      setPlayerTotal(newPlayerTotal);
+
+      if (newPlayerTotal > 21) {
+        setGameResult('lose');
+        await updateMoneyOnResult('lose');
+      }
+    } catch (error) {
+      console.error('Error hitting:', error);
+    }
+  };
+
+  // Handle player standing to end the game
+  const handleStand = async () => {
+    let dealerHandCopy = [...dealerHand];
+    let dealerTotalCopy = dealerTotal;
+
+    // Dealer logic to keep drawing cards until total is 17 or higher
+    while (dealerTotalCopy < 17) {
+      const newCard = drawCard();
+      dealerHandCopy.push(newCard);
+      dealerTotalCopy = calculateTotal(dealerHandCopy);
+      setDealerHand(dealerHandCopy);
+      setDealerTotal(dealerTotalCopy);
+    }
+
+    // Determine game result
+    const result = playerTotal > 21 ? 'lose' :
+      dealerTotalCopy > 21 ? 'win' :
+      playerTotal > dealerTotalCopy ? 'win' :
+      playerTotal === dealerTotalCopy ? 'draw' : 'lose';
+
+    setGameResult(result);
+    await updateMoneyOnResult(result);
+    setShowModal(true); // Show the modal when the game ends
+  };
+
+  // Update money based on game result
+  const updateMoneyOnResult = async (result) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/stand', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, playerTotal, dealerTotal, result }),
+      });
+      const data = await response.json();
+      setMoney(data.money);
+    } catch (error) {
+      console.error('Error updating money:', error);
+    }
+  };
+
+  // Handle restarting the game or going back to the main menu
+  const handleRestart = () => {
+    setIsGameStarted(false);
+    setGameResult(null);
+    setPlayerHand([]);
+    setPlayerTotal(0);
+    setDealerHand([drawCard()]);
+    setDealerTotal(0);
+    setShowModal(false); // Close the modal
+  };
+
+  const handleMainMenu = () => {
+    setIsGameStarted(false);
+    setGameResult(null);
+    setShowModal(false); // Close the modal
+  };
+
+  return (
+    <div className="App">
+      <h1>Welcome to Blackjack!</h1>
+
+      {!isGameStarted && (
+        <div className="start-screen">
+          <input
+            type="text"
+            placeholder="Enter username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <button onClick={handleStart}>Start Game</button>
+        </div>
+      )}
+
+      {isGameStarted && (
+        <>
+          <h2 className="money">Money: ${money}</h2>
+
+          {/* Dealer Hand */}
+          <div className="hand-container dealer">
+            <h3>Dealer Hand Total: {dealerTotal}</h3>
+          </div>
+
+          {/* Player Hand */}
+          <div className="hand-container player">
+            <h3>Player Hand Total: {playerTotal}</h3>
+            <div className="hand player-hand">
+              {playerHand.map((card, index) => (
+                <div key={index} className="card animated-card">
+                  <img src={`https://deckofcardsapi.com/static/img/${card}.png`} alt="card" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Game Action Buttons */}
+          <div className="action-buttons">
+            <button onClick={handleHit} disabled={gameResult !== null}>Hit</button>
+            <button onClick={handleStand} disabled={gameResult !== null}>Stand</button>
+          </div>
+
+          {gameResult && (
+            <div className="game-result">
+              <h2 className="result">Result: You {gameResult}!</h2>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Modal for New Round or Main Menu */}
+      {showModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3 className='GameOver'>Game Over</h3>
+            <p className = 'GameOver'>You {gameResult === 'win' ? 'won!' : gameResult === 'lose' ? 'lost!' : 'tied!'}</p>
+            <button onClick={handleRestart}>New Game</button>
+            <button onClick={handleMainMenu}>Main Menu</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default App;
