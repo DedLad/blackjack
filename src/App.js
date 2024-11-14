@@ -50,7 +50,7 @@ function App() {
   // Calculate total score for the hand
   const calculateTotal = (hand) => {
     let total = 0;
-    let aces = 0;
+    let aces = 1;//made test change here 
     hand.forEach(card => {
       const value = card.slice(0, -1); // Get value part (e.g., '10', 'J', 'A')
       if (value === 'A') {
