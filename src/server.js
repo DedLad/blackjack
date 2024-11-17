@@ -4,21 +4,24 @@ const cors = require('cors');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type']
+}));
 
 mongoose.connect('mongodb://localhost:27017/blackjack', { useNewUrlParser: true, useUnifiedTopology: true });
 
 const userSchema = new mongoose.Schema({
     username: String,
-    money: { type: Number, default: 1000 }
+    money: { type: Number, default: 1000 },
+    wager: { type: Number, default: 0 }
 });
 
 const User = mongoose.model('User', userSchema);
 
-// Utility function to draw a card
-const drawCard = () => Math.floor(Math.random() * 11) + 1; // Random card between 1 and 11
+const drawCard = () => Math.floor(Math.random() * 11) + 1;
 
-// Start game endpoint
 app.post('/api/start', async (req, res) => {
     const { username } = req.body;
     try {
@@ -29,26 +32,24 @@ app.post('/api/start', async (req, res) => {
         }
 
         if (user.money <= 0) {
-            user.money = 700; // Reset money if zero
+            user.money = 700;
             await user.save();
         }
 
-        res.json({ money: user.money });
+        res.json({ money: user.money, wager: user.wager });
     } catch (error) {
         console.error('Error starting game:', error);
         res.status(500).json({ error: 'Failed to start game' });
     }
 });
 
-// Hit endpoint to draw a card for the player
 app.post('/api/hit', (req, res) => {
     const newCard = drawCard();
     res.json({ newCard });
 });
 
-// Stand endpoint to finalize the game outcome
 app.post('/api/stand', async (req, res) => {
-    const { username, playerTotal, dealerTotal, result } = req.body;
+    const { username, playerTotal, dealerTotal, result, wager } = req.body;
 
     try {
         const user = await User.findOne({ username });
@@ -56,7 +57,7 @@ app.post('/api/stand', async (req, res) => {
 
         if (!finalResult) {
             if (playerTotal > 21) {
-                finalResult = 'lose'; // Player busts if over 21
+                finalResult = 'lose';
             } else if (dealerTotal > 21 || (playerTotal <= 21 && playerTotal > dealerTotal)) {
                 finalResult = 'win';
             } else if (playerTotal === dealerTotal) {
@@ -66,11 +67,10 @@ app.post('/api/stand', async (req, res) => {
             }
         }
 
-        // Update money based on the game result
         if (finalResult === 'win') {
-            user.money += 100;
+            user.money += wager;
         } else if (finalResult === 'lose') {
-            user.money -= 100;
+            user.money -= wager;
         }
         await user.save();
 
@@ -81,6 +81,25 @@ app.post('/api/stand', async (req, res) => {
     }
 });
 
-app.listen(5000, () => {
-    console.log('Server is running on http://localhost:5000');
+app.post('/api/setWager', async (req, res) => {
+    const { username, wager } = req.body;
+
+    try {
+        const user = await User.findOne({ username });
+        if (user.money < wager) {
+            return res.status(400).json({ error: 'Not enough money for the wager' });
+        }
+
+        user.wager = wager;
+        await user.save();
+
+        res.json({ wager: user.wager });
+    } catch (error) {
+        console.error('Error setting wager:', error);
+        res.status(500).json({ error: 'Failed to set wager' });
+    }
+});
+
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
 });
