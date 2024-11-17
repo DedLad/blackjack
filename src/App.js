@@ -51,7 +51,7 @@ function App() {
   // Calculate total score for the hand
   const calculateTotal = (hand) => {
     let total = 0;
-    let aces = 1;//made test change here 
+    let aces = 1;
     hand.forEach(card => {
       const value = card.slice(0, -1); // Get value part (e.g., '10', 'J', 'A')
       if (value === 'A') {
@@ -119,20 +119,20 @@ function App() {
   // Update money based on game result
   const updateMoneyOnResult = async (result) => {
     let updatedMoney = money;
-    
+
     if (result === 'win') {
       updatedMoney += wager;
     } else if (result === 'lose') {
       updatedMoney -= wager;
     }
-  
+
     try {
       const response = await fetch('http://localhost:5000/api/stand', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, playerTotal, dealerTotal, result }),
+        body: JSON.stringify({ username, playerTotal, dealerTotal, result, wager }),
       });
-      
+
       const data = await response.json();
       // Ensure the backend response contains the correct updated money
       setMoney(data.money); // Update money after receiving the response
@@ -159,16 +159,16 @@ function App() {
     setShowModal(false); // Close the modal
   };
 
-  // Wager increase and decrease handlers
+
   const increaseWager = () => {
     if (wager < money) {
-      setWager(wager + 50); // Increase wager by 50, but not beyond money
+      setWager(wager + 50);
     }
   };
 
   const decreaseWager = () => {
     if (wager > 0) {
-      setWager(wager - 50); // Decrease wager by 50, but not below 0
+      setWager(wager - 50);
     }
   };
 
@@ -244,7 +244,7 @@ function App() {
         <div className="modal">
           <div className="modal-content">
             <h3 className='GameOver'>Game Over</h3>
-            <p className = 'GameOver'>You {gameResult === 'win' ? 'won!' : gameResult === 'lose' ? 'lost!' : 'tied!'}</p>
+            <p className='GameOver'>You {gameResult === 'win' ? 'won!' : gameResult === 'lose' ? 'lost!' : 'tied!'}</p>
             <button onClick={handleRestart}>New Game</button>
             <button onClick={handleMainMenu}>Main Menu</button>
           </div>
