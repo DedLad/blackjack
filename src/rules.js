@@ -31,12 +31,6 @@ const BlackjackRules = () => {
         </li>
         <li>Force the dealer to bust by having a higher hand value.</li>
       </ol>
-      <h2 style={styles.subHeader}>Additional Notes:</h2>
-      <p style={styles.paragraph}>
-        In some variants, players can "Double Down" (double their bet after the first two
-        cards) or "Split" (divide pairs into two hands). Ensure you know the specific
-        house rules before playing.
-      </p>
     </div>
   );
 };

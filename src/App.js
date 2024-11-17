@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import BlackjackRules from './rules'; // Import the rules component
 
 // Utility function to draw a random card from the deck
 const drawCard = () => {
@@ -20,6 +21,7 @@ function App() {
   const [gameResult, setGameResult] = useState(null);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [showModal, setShowModal] = useState(false); // For modal control
+  const [showRules, setShowRules] = useState(false); // Toggle for showing rules
 
   // Start the game and fetch user's money
   const handleStart = async () => {
@@ -150,7 +152,7 @@ function App() {
     <div className="App">
       <h1>Welcome to Blackjack!</h1>
 
-      {!isGameStarted && (
+      {!isGameStarted && !showRules && (
         <div className="start-screen">
           <input
             type="text"
@@ -159,6 +161,7 @@ function App() {
             onChange={(e) => setUsername(e.target.value)}
           />
           <button onClick={handleStart}>Start Game</button>
+          <button onClick={() => setShowRules(true)}>Show Rules</button>
         </div>
       )}
 
@@ -202,10 +205,18 @@ function App() {
         <div className="modal">
           <div className="modal-content">
             <h3 className='GameOver'>Game Over</h3>
-            <p className = 'GameOver'>You {gameResult === 'win' ? 'won!' : gameResult === 'lose' ? 'lost!' : 'tied!'}</p>
+            <p className='GameOver'>You {gameResult === 'win' ? 'won!' : gameResult === 'lose' ? 'lost!' : 'tied!'}</p>
             <button onClick={handleRestart}>New Game</button>
             <button onClick={handleMainMenu}>Main Menu</button>
           </div>
+        </div>
+      )}
+
+      {/* Rules Screen */}
+      {showRules && (
+        <div className="rules-screen">
+          <BlackjackRules />
+          <button onClick={() => setShowRules(false)}>Back to Main Menu</button>
         </div>
       )}
     </div>
