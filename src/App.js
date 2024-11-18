@@ -183,6 +183,7 @@ function App() {
                   <img
                     src={`https://deckofcardsapi.com/static/img/${card[0] === '1' && card[1] === '0' ? '0' + card.slice(2) : card}.png`}
                     alt="card"
+                    // <img src={`https://deckofcardsapi.com/static/img/${card}.png`} alt="card" />
                   />
                 </div>
               ))}
