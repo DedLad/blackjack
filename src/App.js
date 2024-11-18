@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import FAQ from './faq';
 import BlackjackRules from './rules'; // Import the rules component
 import WagerInput from './Wagerinput'; // Import the WagerInput component
 
@@ -25,6 +26,7 @@ function App() {
   const [isWagerSet, setIsWagerSet] = useState(false); // State to track if wager is set
   const [showModal, setShowModal] = useState(false); // For modal control
   const [showRules, setShowRules] = useState(false); // Toggle for showing rules
+  const [showFaq, setShowFaq] = useState(false);
 
   // Start the game and fetch user's money
   const handleStart = async () => {
@@ -38,6 +40,7 @@ function App() {
       setMoney(data.money);
       setIsGameStarted(true);
       setGameResult(null); // Reset game result
+      setShowFaq(false);
     } catch (error) {
       console.error('Error starting game:', error);
       alert('Error starting game');
@@ -159,6 +162,14 @@ function App() {
     setGameResult(null);
     setShowModal(false); // Close the modal
   };
+  const handleBackToMenu1 = () => {
+    setShowRules(true);
+    setShowFaq(false);
+    };
+  const handleBackToMenu2 = () => {
+    setShowRules(false);
+    setShowFaq(true);
+    };
 
   return (
     <div className="App">
@@ -173,7 +184,9 @@ function App() {
             onChange={(e) => setUsername(e.target.value)}
           />
           <button onClick={handleStart}>Start Game</button>
-          <button onClick={() => setShowRules(true)}>Show Rules</button>
+          <button onClick={handleBackToMenu1}>Rules Page</button>
+          <button onClick={handleBackToMenu2}>Show FAQ</button>
+
         </div>
       )}
 
@@ -228,6 +241,13 @@ function App() {
             <button onClick={handleRestart}>New Game</button>
             <button onClick={handleMainMenu}>Main Menu</button>
           </div>
+        </div>
+      )}
+      {/* FAQ Screen */}
+      {showFaq && (
+        <div className='faq-screen'>
+          <FAQ/>
+          <button onClick={() => setShowFaq(false)}>Hide</button>
         </div>
       )}
 
