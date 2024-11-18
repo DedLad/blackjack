@@ -129,8 +129,8 @@ const calculateTotal = (hand) => {
     // Determine game result
     const result = playerTotal > 21 ? 'lose' :
       dealerTotalCopy > 21 ? 'win' :
-      playerTotal > dealerTotalCopy ? 'win' :
-      playerTotal === dealerTotalCopy ? 'draw' : 'lose';
+        playerTotal > dealerTotalCopy ? 'win' :
+          playerTotal === dealerTotalCopy ? 'draw' : 'lose';
 
     setGameResult(result);
     await updateMoneyOnResult(result);
@@ -232,11 +232,20 @@ const calculateTotal = (hand) => {
           <div className="hand-container player">
             <h3>Player Hand Total: {playerTotal}</h3>
             <div className="hand player-hand">
-              {playerHand.map((card, index) => (
+              {playerHand.map((card, index) => {
+                const cardValue = card.slice(0, -1); // Get the value part (e.g., '10', 'J', 'A')
+                const cardSuit = card.slice(-1); // Get the suit part (e.g., 'C', 'D', 'H', 'S')
+
+                const cardImageURL = cardValue === '10'
+                  ? `https://deckofcardsapi.com/static/img/0${cardSuit}.png`
+                  : `https://deckofcardsapi.com/static/img/${cardValue}${cardSuit}.png`;
+
+                return (
                   <div key={index} className="card animated-card">
-                  <img src={`https://deckofcardsapi.com/static/img/${card}.png`} alt="card" />
+                    <img src={cardImageURL} alt={`card ${card}`} />
                   </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
