@@ -87,7 +87,7 @@ function App() {
         await updateMoneyOnResult('lose');
         setTimeout(() => {
           setShowModal(true); // 1.5 secs time delay
-        }, 1500);
+        }, 500);
       }
     } catch (error) {
       console.error('Error hitting:', error);
