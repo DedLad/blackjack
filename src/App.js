@@ -22,55 +22,74 @@ function App() {
   const [showModal, setShowModal] = useState(false); // For modal control
   const [wager, setWager] = useState(0); // New state for wager
 
-  // Start the game and fetch user's money
-  const handleStart = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username }),
-      });
-      const data = await response.json();
-      setMoney(data.money);
-
-      const initialPlayerHand = [drawCard(), drawCard()];
-      const initialDealerHand = [drawCard()];
-      setPlayerHand(initialPlayerHand);
-      setPlayerTotal(calculateTotal(initialPlayerHand));
-      setDealerHand(initialDealerHand);
-      setDealerTotal(calculateTotal(initialDealerHand));
-
-      setIsGameStarted(true);
-      setGameResult(null); // Reset game result
-    } catch (error) {
-      console.error('Error starting game:', error);
-      alert('Error starting game');
-    }
-  };
-
-  // Calculate total score for the hand
-  const calculateTotal = (hand) => {
-    let total = 0;
-    let aces = 1;
-    hand.forEach(card => {
-      const value = card.slice(0, -1); // Get value part (e.g., '10', 'J', 'A')
-      if (value === 'A') {
-        total += 11;
-        aces++;
-      } else if (['J', 'Q', 'K'].includes(value)) {
-        total += 10;
-      } else {
-        total += parseInt(value);
-      }
+// Start the game and fetch user's money
+// Start the game and fetch user's money
+const handleStart = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username }),
     });
+    const data = await response.json();
 
-    // Adjust for aces (if total > 21, subtract 10 for each ace)
-    while (total > 21 && aces > 0) {
-      total -= 10;
-      aces--;
+    // Subtract the wager from the initial money
+    setMoney(data.money - wager);
+
+    const initialPlayerHand = [drawCard(), drawCard()];
+    const initialDealerHand = [drawCard()];
+    setPlayerHand(initialPlayerHand);
+    setPlayerTotal(calculateTotal(initialPlayerHand));
+    setDealerHand(initialDealerHand);
+    setDealerTotal(calculateTotal(initialDealerHand));
+
+    setIsGameStarted(true);
+    setGameResult(null); // Reset game result
+
+    // Reset wager when game starts
+    setWager(0); // Reset wager to 0 when a new game begins
+  } catch (error) {
+    console.error('Error starting game:', error);
+    alert('Error starting game');
+  }
+};
+
+
+
+// Calculate total score for the hand
+const calculateTotal = (hand) => {
+  let total = 0;
+  let aces = 0; // Track the number of aces
+
+  hand.forEach(card => {
+    // Get the value part of the card (the last character or part of the string)
+    const value = card.slice(0, -1); // Everything except the suit (H, D, C, S)
+    
+    // Check for Ace (A)
+    if (value === 'A') {
+      total += 11; // Start by assuming Ace is 11
+      aces++; // Count the Ace
     }
-    return total;
-  };
+    // Check for Face Cards (J, Q, K)
+    else if (value === 'J' || value === 'Q' || value === 'K') {
+      total += 10; // Face cards are always worth 10
+    }
+    // If it's a number card (2-10)
+    else {
+      total += parseInt(value); // Add its numerical value
+    }
+  });
+
+  // Adjust for aces if total exceeds 21 (convert Ace from 11 to 1)
+  while (total > 21 && aces > 0) {
+    total -= 10; // Convert one Ace from 11 to 1
+    aces--; // Decrement the Ace count
+  }
+
+  return total;
+};
+
+
 
   // Handle player hitting for a new card
   const handleHit = async () => {
@@ -121,7 +140,7 @@ function App() {
     let updatedMoney = money;
 
     if (result === 'win') {
-      updatedMoney += wager;
+      updatedMoney += 2*wager;
     } else if (result === 'lose') {
       updatedMoney -= wager;
     }
@@ -184,6 +203,13 @@ function App() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+          {/* Wager Control */}
+          
+          <div className="wager-control">
+            <h3>Wager: ${wager}</h3>
+            <button onClick={decreaseWager} disabled={wager === 0}>-</button>
+            <button onClick={increaseWager} disabled={wager === money}>+</button>
+          </div>
           <button onClick={handleStart}>Start Game</button>
         </div>
       )}
@@ -192,12 +218,7 @@ function App() {
         <>
           <h2 className="money">Money: ${money}</h2>
 
-          {/* Wager Control */}
-          <div className="wager-control">
-            <h3>Wager: ${wager}</h3>
-            <button onClick={decreaseWager} disabled={wager === 0}>-</button>
-            <button onClick={increaseWager} disabled={wager === money}>+</button>
-          </div>
+        
 
           {/* Dealer Hand */}
           <div className="hand-container dealer">
