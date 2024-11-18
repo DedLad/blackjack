@@ -48,7 +48,7 @@ app.post('/api/hit', (req, res) => {
 
 // Stand endpoint to finalize the game outcome
 app.post('/api/stand', async (req, res) => {
-    const { username, playerTotal, dealerTotal, result } = req.body;
+    const { username, playerTotal, dealerTotal, result, wager } = req.body;
 
     try {
         const user = await User.findOne({ username });
@@ -68,9 +68,9 @@ app.post('/api/stand', async (req, res) => {
 
         // Update money based on the game result
         if (finalResult === 'win') {
-            user.money += 100;
+            user.money += wager;
         } else if (finalResult === 'lose') {
-            user.money -= 100;
+            user.money -= wager; //wager value retrieved from the frontend and used
         }
         await user.save();
 

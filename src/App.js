@@ -14,12 +14,14 @@ const drawCard = () => {
 function App() {
   const [username, setUsername] = useState('');
   const [money, setMoney] = useState(0);
+  const [wager, setWager] = useState(0); //wager state, was thinking off adding a default state but some issue
   const [playerHand, setPlayerHand] = useState([]);
   const [playerTotal, setPlayerTotal] = useState(0);
   const [dealerHand, setDealerHand] = useState([]);
   const [dealerTotal, setDealerTotal] = useState(0);
   const [gameResult, setGameResult] = useState(null);
   const [isGameStarted, setIsGameStarted] = useState(false);
+  const [isWagerSet, setIsWagerSet] = useState(false); // Wager status state
   const [showModal, setShowModal] = useState(false); // For modal control
   const [showRules, setShowRules] = useState(false); // Toggle for showing rules
 
@@ -33,19 +35,26 @@ function App() {
       });
       const data = await response.json();
       setMoney(data.money);
+      setIsGameStarted(true);
+      setGameResult(null); 
+    } catch (error) {
+      console.error('Error starting game:', error);
+      alert('Error starting game');
+    }
+  };
 
+  // Wager amount field validation and setting the wager
+  const handleSetWager = () => {
+    if (wager > 0 && wager <= money) {
       const initialPlayerHand = [drawCard(), drawCard()];
       const initialDealerHand = [drawCard()];
       setPlayerHand(initialPlayerHand);
       setPlayerTotal(calculateTotal(initialPlayerHand));
       setDealerHand(initialDealerHand);
       setDealerTotal(calculateTotal(initialDealerHand));
-
-      setIsGameStarted(true);
-      setGameResult(null); // Reset game result
-    } catch (error) {
-      console.error('Error starting game:', error);
-      alert('Error starting game');
+      setIsWagerSet(true);
+    } else {
+      alert('Invalid wager amount. Please enter an amount within your available money.');
     }
   };
 
@@ -125,7 +134,7 @@ function App() {
       const response = await fetch('http://localhost:5000/api/stand', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, playerTotal, dealerTotal, result }),
+        body: JSON.stringify({ username, playerTotal, dealerTotal, result, wager }),
       });
       const data = await response.json();
       setMoney(data.money);
@@ -137,6 +146,7 @@ function App() {
   // Handle restarting the game or going back to the main menu
   const handleRestart = () => {
     setIsGameStarted(false);
+    setIsWagerSet(false);
     setGameResult(null);
     setPlayerHand([]);
     setPlayerTotal(0);
@@ -147,6 +157,7 @@ function App() {
 
   const handleMainMenu = () => {
     setIsGameStarted(false);
+    setIsWagerSet(false);
     setGameResult(null);
     setShowModal(false); // Close the modal
   };
@@ -168,7 +179,20 @@ function App() {
         </div>
       )}
 
-      {isGameStarted && (
+      {isGameStarted && !isWagerSet && (
+        <div className="wager-screen">
+          <h2 className="money">Money: ${money}</h2>
+          <input
+            type="number"
+            placeholder="Enter wager amount"
+            value={wager}
+            onChange={(e) => setWager(parseInt(e.target.value))}
+          />
+          <button onClick={handleSetWager}>Set Wager</button>
+        </div>
+      )}
+
+      {isGameStarted && isWagerSet && (
         <>
           <h2 className="money">Money: ${money}</h2>
 
@@ -186,7 +210,6 @@ function App() {
                   <img
                     src={`https://deckofcardsapi.com/static/img/${card[0] === '1' && card[1] === '0' ? '0' + card.slice(2) : card}.png`}
                     alt="card"
-                    // <img src={`https://deckofcardsapi.com/static/img/${card}.png`} alt="card" />
                   />
                 </div>
               ))}
