@@ -85,6 +85,9 @@ function App() {
       if (newPlayerTotal > 21) {
         setGameResult('lose');
         await updateMoneyOnResult('lose');
+        setTimeout(() => {
+          setShowModal(true); // 1.5 secs time delay
+        }, 1500);
       }
     } catch (error) {
       console.error('Error hitting:', error);
