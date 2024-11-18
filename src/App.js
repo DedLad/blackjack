@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import BlackjackRules from './rules'; // Import the rules component
 
 // Utility function to draw a random card from the deck
 const drawCard = () => {
@@ -21,6 +22,7 @@ function App() {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [showModal, setShowModal] = useState(false); // For modal control
   const [wager, setWager] = useState(0); // New state for wager
+  const [showRules, setShowRules] = useState(false);
 
 // Start the game and fetch user's money
 // Start the game and fetch user's money
@@ -195,7 +197,7 @@ const calculateTotal = (hand) => {
     <div className="App">
       <h1>Welcome to Blackjack!</h1>
 
-      {!isGameStarted && (
+      {!isGameStarted && !showRules && (
         <div className="start-screen">
           <input
             type="text"
@@ -211,6 +213,7 @@ const calculateTotal = (hand) => {
             <button onClick={increaseWager} disabled={wager === money}>+</button>
           </div>
           <button onClick={handleStart}>Start Game</button>
+          <button onClick={() => setShowRules(true)}>Show Rules</button>
         </div>
       )}
 
@@ -229,20 +232,11 @@ const calculateTotal = (hand) => {
           <div className="hand-container player">
             <h3>Player Hand Total: {playerTotal}</h3>
             <div className="hand player-hand">
-              {playerHand.map((card, index) => {
-                const cardValue = card.slice(0, -1); // Get the value part (e.g., '10', 'J', 'A')
-                const cardSuit = card.slice(-1); // Get the suit part (e.g., 'C', 'D', 'H', 'S')
-
-                const cardImageURL = cardValue === '10'
-                  ? `https://deckofcardsapi.com/static/img/0${cardSuit}.png`
-                  : `https://deckofcardsapi.com/static/img/${cardValue}${cardSuit}.png`;
-
-                return (
+              {playerHand.map((card, index) => (
                   <div key={index} className="card animated-card">
-                    <img src={cardImageURL} alt={`card ${card}`} />
+                  <img src={`https://deckofcardsapi.com/static/img/${card}.png`} alt="card" />
                   </div>
-                );
-              })}
+              ))}
             </div>
           </div>
 
@@ -269,6 +263,14 @@ const calculateTotal = (hand) => {
             <button onClick={handleRestart}>New Game</button>
             <button onClick={handleMainMenu}>Main Menu</button>
           </div>
+        </div>
+      )}
+
+      {/* Rules Screen */}
+      {showRules && (
+        <div className="rules-screen">
+          <BlackjackRules />
+          <button onClick={() => setShowRules(false)}>Back to Main Menu</button>
         </div>
       )}
     </div>
