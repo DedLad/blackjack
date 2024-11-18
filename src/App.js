@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import BlackjackRules from './rules'; // Import the rules component
+import WagerInput from './Wagerinput'; // Import the WagerInput component
 
 // Utility function to draw a random card from the deck
 const drawCard = () => {
@@ -14,14 +15,14 @@ const drawCard = () => {
 function App() {
   const [username, setUsername] = useState('');
   const [money, setMoney] = useState(0);
-  const [wager, setWager] = useState(0); //wager state, was thinking off adding a default state but some issue
+  const [wager, setWager] = useState(0); // State for wager amount
   const [playerHand, setPlayerHand] = useState([]);
   const [playerTotal, setPlayerTotal] = useState(0);
   const [dealerHand, setDealerHand] = useState([]);
   const [dealerTotal, setDealerTotal] = useState(0);
   const [gameResult, setGameResult] = useState(null);
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [isWagerSet, setIsWagerSet] = useState(false); // Wager status state
+  const [isWagerSet, setIsWagerSet] = useState(false); // State to track if wager is set
   const [showModal, setShowModal] = useState(false); // For modal control
   const [showRules, setShowRules] = useState(false); // Toggle for showing rules
 
@@ -36,26 +37,23 @@ function App() {
       const data = await response.json();
       setMoney(data.money);
       setIsGameStarted(true);
-      setGameResult(null); 
+      setGameResult(null); // Reset game result
     } catch (error) {
       console.error('Error starting game:', error);
       alert('Error starting game');
     }
   };
 
-  // Wager amount field validation and setting the wager
-  const handleSetWager = () => {
-    if (wager > 0 && wager <= money) {
-      const initialPlayerHand = [drawCard(), drawCard()];
-      const initialDealerHand = [drawCard()];
-      setPlayerHand(initialPlayerHand);
-      setPlayerTotal(calculateTotal(initialPlayerHand));
-      setDealerHand(initialDealerHand);
-      setDealerTotal(calculateTotal(initialDealerHand));
-      setIsWagerSet(true);
-    } else {
-      alert('Invalid wager amount. Please enter an amount within your available money.');
-    }
+  // Set the wager amount and start the game
+  const handleWagerSet = (wager) => {
+    setWager(wager);
+    const initialPlayerHand = [drawCard(), drawCard()];
+    const initialDealerHand = [drawCard()];
+    setPlayerHand(initialPlayerHand);
+    setPlayerTotal(calculateTotal(initialPlayerHand));
+    setDealerHand(initialDealerHand);
+    setDealerTotal(calculateTotal(initialDealerHand));
+    setIsWagerSet(true);
   };
 
   // Calculate total score for the hand
@@ -180,16 +178,7 @@ function App() {
       )}
 
       {isGameStarted && !isWagerSet && (
-        <div className="wager-screen">
-          <h2 className="money">Money: ${money}</h2>
-          <input
-            type="number"
-            placeholder="Enter wager amount"
-            value={wager}
-            onChange={(e) => setWager(parseInt(e.target.value))}
-          />
-          <button onClick={handleSetWager}>Set Wager</button>
-        </div>
+        <WagerInput money={money} onWagerSet={handleWagerSet} />
       )}
 
       {isGameStarted && isWagerSet && (
