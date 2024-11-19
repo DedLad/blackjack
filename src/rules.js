@@ -25,6 +25,15 @@ const BlackjackRules = () => {
           A natural "Blackjack" (Ace + 10-point card) beats all other hands.
         </li>
       </ul>
+      <h2 className="rules-subHeader">Wager:</h2>
+      <ol className="rules-list">
+        <li>
+        Before the dealer deals any cards, each player places their bet in the designated betting area on the table.
+        </li>
+        <li>
+        If the player's hand wins against the dealer's hand, their wager is returned along with their winnings, increasing their total balance.</li>
+        <li>If the player's hand loses, the wager is forfeited to the dealer.</li>
+      </ol>
       <h2 className="rules-subHeader">Winning Conditions:</h2>
       <ol className="rules-list">
         <li>
