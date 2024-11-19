@@ -154,7 +154,7 @@ function App() {
 
   // Handle restarting the game or going back to the main menu
   const handleRestart = () => {
-    setIsGameStarted(false);
+    setIsGameStarted(true);
     setIsWagerSet(false);
     setGameResult(null);
     setPlayerHand([]);
@@ -195,12 +195,12 @@ function App() {
             type="text"
             placeholder="Enter username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)} 
           />
           <button onClick={handleStart}>Start Game</button>
           <button onClick={handleBackToMenu1}>Rules Page</button>
-          <button onClick={handleBackToMenu2}>Show FAQ</button>
-          <button onClick={handleLeaderboard}>Leaderboard</button>
+          <button onClick={handleBackToMenu2}>FAQ Page</button>
+          <button onClick={handleLeaderboard}>Leaderboard Page</button>
         </div>
       )}
 
