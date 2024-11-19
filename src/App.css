@@ -1,7 +1,7 @@
 .App {
   text-align: center;
   font-family: 'Arial', sans-serif;
-  background: linear-gradient(90deg, #000000, #34495e);
+  background-color: #2c3e50;
   color: #ecf0f1;
   min-height: 100vh;
   display: flex;
@@ -13,37 +13,28 @@
 
 button {
   margin: 10px;
-  padding: 12px 25px;
+  padding: 10px 20px;
   font-size: 16px;
-  background: linear-gradient(135deg, #e74c3c, #ff6b5e);
-  color: #fff;
+  background-color: #e74c3c;
+  color: #ecf0f1;
   border: none;
-  border-radius: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s;
 }
 
 button:hover {
-  background: linear-gradient(135deg, #c0392b, #e74c3c);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+  background-color: #c0392b;
 }
 
 h1, h2, h3 {
   margin: 20px 0;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .money {
   position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 18px;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 10px 20px;
-  border-radius: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  top: 10px;
+  right: 20px;
 }
 
 .hand-container {
@@ -76,9 +67,6 @@ h1, h2, h3 {
 
 .game-result {
   margin-top: 20px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #2ecc71;
 }
 
 .modal {
@@ -87,41 +75,29 @@ h1, h2, h3 {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
 }
 
 .modal-content {
-  background: #fff;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 10px;
   text-align: center;
 }
 
 .action-buttons {
   margin: 20px 0;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
 }
 
 input {
-  padding: 12px;
+  padding: 10px;
   font-size: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 30px;
-  outline: none;
+  border: none;
+  border-radius: 5px;
   margin-right: 10px;
-  transition: box-shadow 0.3s ease;
-}
-
-input:focus {
-  box-shadow: 0 0 6px rgba(52, 152, 219, 0.7);
 }
 
 .start-screen {
@@ -129,19 +105,6 @@ input:focus {
   justify-content: center;
   align-items: center;
 }
-
-.GameOver {
-  color: #e74c3c;
-  font-size: 24px;
-  font-weight: bold;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.GameOver{
+  color: #c0392b;
 }

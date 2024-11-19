@@ -182,6 +182,7 @@ function App() {
     };
   const quitGame =() =>{
     setIsGameStarted(false);
+    setIsWagerSet(false);
   }
 
   return (
