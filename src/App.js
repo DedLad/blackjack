@@ -154,7 +154,7 @@ function App() {
 
   // Handle restarting the game or going back to the main menu
   const handleRestart = () => {
-    setIsGameStarted(false);
+    setIsGameStarted(true);
     setIsWagerSet(false);
     setGameResult(null);
     setPlayerHand([]);
