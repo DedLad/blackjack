@@ -44,8 +44,8 @@ h1, h2, h3 {
 }
 
 .card {
-  width: 226px;  /* Smaller card size */
-  height: 314px; /* Smaller card size */
+  width: 226px;  
+  height: 314px; 
   margin: 5px;
   border: 1px solid #fff;
   border-radius: 5px;
