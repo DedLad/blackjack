@@ -189,7 +189,7 @@ function App() {
     <div className="App">
       <h1>Welcome to Blackjack!</h1>
 
-      {!isGameStarted && !showRules && (
+      {!showFaq && !showLeaderboard && !isGameStarted && !showRules && (
         <div className="start-screen">
           <input
             type="text"
@@ -262,13 +262,13 @@ function App() {
       {showFaq && (
         <div className="rules-container">
           <FAQ />
-          <button onClick={() => setShowFaq(false)}>Hide</button>
+          <button onClick={() => setShowFaq(false)}>Back to Main Menu</button>
         </div>
       )}
       {showLeaderboard && (
       <div className="rules-screen">
         <Leaderboard />
-        <button onClick={() => setShowLeaderboard(false)}>Hide</button>
+        <button onClick={() => setShowLeaderboard(false)}>Back to Main Menu</button>
       </div>
     )}
       {/* Rules Screen */}
