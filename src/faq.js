@@ -1,4 +1,5 @@
 import React from "react";
+import './rules.css';
 const FAQ = () => {
   return (
     <div className="rules-container">
@@ -7,7 +8,7 @@ const FAQ = () => {
       <ul className="rules-list">
         <li>
           <strong>Q: What happens if my money reaches zero?</strong>
-          <p>A: Your balance will automatically reset to $100 lower than your intial balance so you can continue playing.</p>
+          <p>A: Your balance will automatically reset to $700 so you can continue playing.</p>
         </li>
         <li>
           <strong>Q: How do I play Blackjack?</strong>

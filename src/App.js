@@ -4,6 +4,7 @@ import FAQ from './faq';
 import BlackjackRules from './rules'; // Import the rules component
 import WagerInput from './Wagerinput'; // Import the WagerInput component
 
+
 // Utility function to draw a random card from the deck
 const drawCard = () => {
   const cardSuits = ['H', 'D', 'C', 'S']; // Hearts, Diamonds, Clubs, Spades
@@ -245,8 +246,8 @@ function App() {
       )}
       {/* FAQ Screen */}
       {showFaq && (
-        <div className='faq-screen'>
-          <FAQ/>
+        <div className="rules-container">
+          <FAQ />
           <button onClick={() => setShowFaq(false)}>Hide</button>
         </div>
       )}
