@@ -3,7 +3,7 @@ import './App.css';
 import FAQ from './faq';
 import BlackjackRules from './rules'; // Import the rules component
 import WagerInput from './Wagerinput'; // Import the WagerInput component
-
+import Leaderboard from './leaderboard';
 
 // Utility function to draw a random card from the deck
 const drawCard = () => {
@@ -28,6 +28,7 @@ function App() {
   const [showModal, setShowModal] = useState(false); // For modal control
   const [showRules, setShowRules] = useState(false); // Toggle for showing rules
   const [showFaq, setShowFaq] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Start the game and fetch user's money
   const handleStart = async () => {
@@ -42,6 +43,7 @@ function App() {
       setIsGameStarted(true);
       setGameResult(null); // Reset game result
       setShowFaq(false);
+      setShowLeaderboard(false);
     } catch (error) {
       console.error('Error starting game:', error);
       alert('Error starting game');
@@ -144,6 +146,11 @@ function App() {
       console.error('Error updating money:', error);
     }
   };
+  const handleLeaderboard = () => {
+    setShowLeaderboard(true);
+    setShowRules(false);
+    setShowFaq(false);
+  };
 
   // Handle restarting the game or going back to the main menu
   const handleRestart = () => {
@@ -165,12 +172,17 @@ function App() {
   };
   const handleBackToMenu1 = () => {
     setShowRules(true);
+    setShowLeaderboard(false);
     setShowFaq(false);
     };
   const handleBackToMenu2 = () => {
     setShowRules(false);
     setShowFaq(true);
+    setShowLeaderboard(false);
     };
+  const quitGame =() =>{
+    setIsGameStarted(false);
+  }
 
   return (
     <div className="App">
@@ -187,7 +199,7 @@ function App() {
           <button onClick={handleStart}>Start Game</button>
           <button onClick={handleBackToMenu1}>Rules Page</button>
           <button onClick={handleBackToMenu2}>Show FAQ</button>
-
+          <button onClick={handleLeaderboard}>Leaderboard</button>
         </div>
       )}
 
@@ -223,6 +235,7 @@ function App() {
           <div className="action-buttons">
             <button onClick={handleHit} disabled={gameResult !== null}>Hit</button>
             <button onClick={handleStand} disabled={gameResult !== null}>Stand</button>
+            <button onClick={quitGame}>Quit</button>
           </div>
 
           {gameResult && (
@@ -251,7 +264,12 @@ function App() {
           <button onClick={() => setShowFaq(false)}>Hide</button>
         </div>
       )}
-
+      {showLeaderboard && (
+      <div className="rules-screen">
+        <Leaderboard />
+        <button onClick={() => setShowLeaderboard(false)}>Hide</button>
+      </div>
+    )}
       {/* Rules Screen */}
       {showRules && (
         <div className="rules-screen">
@@ -260,6 +278,7 @@ function App() {
         </div>
       )}
     </div>
+    
   );
 }
 

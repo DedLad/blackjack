@@ -80,7 +80,15 @@ app.post('/api/stand', async (req, res) => {
         res.status(500).json({ error: 'Failed to finalize game' });
     }
 });
-
+app.get('/api/leaderboard', async (req, res) => {
+    try {
+        const leaderboard = await User.find().sort({ money: -1 }).limit(10); // Get top 10 users sorted by money
+        res.json({ leaderboard });
+    } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        res.status(500).json({ error: 'Failed to fetch leaderboard' });
+    }
+});
 app.listen(5000, () => {
     console.log('Server is running on http://localhost:5000');
 });
